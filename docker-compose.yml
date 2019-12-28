@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  api:
+    build: 
+      context: .
+      dockerfile: ./api.Dockerfile
+    volumes:
+      - .:/code
+    environment:
+      FLASK_ENV: development
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+
+  ui:
+    build:
+      context: ./frontend
+      dockerfile: ../ui.Dockerfile
+    volumes:
+      - './frontend:/app'
+      - '/app/node_modules'
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+
+  mongodb:
+        image: mongo:latest
+        ports:
+            - 27017:27017
+        
