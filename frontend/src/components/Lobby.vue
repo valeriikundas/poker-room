@@ -35,15 +35,14 @@
   </div>
 </template>
 
-<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
 <script>
 import router from "../router";
-import axios from "axios";
+import axios from "../main.js";
 
 export default {
   data() {
     return {
-      error: "error",
+      error: "",
       tables: [],
       username: "",
       table_id: "",
@@ -54,7 +53,7 @@ export default {
   methods: {
     getTables() {
       const path = "tables/";
-      this.$http
+      axios
         .get(path)
         .then(response => {
           this.tables = response.data["tables"];
@@ -66,7 +65,7 @@ export default {
     },
     onLogin() {
       const path = "login/";
-      this.$http
+      axios
         .post(path, { username: this.username })
         .then(() => {
           this.loggedIn = true;
@@ -81,7 +80,7 @@ export default {
     },
     onLogout() {
       const path = "logout/";
-      this.$http
+      axios
         .get(path)
         .then(() => {
           this.username = "";
@@ -96,9 +95,10 @@ export default {
         );
     },
     onJoin(table) {
+      // FIXME: requests are sent one by one. not in session, without cookies
       let table_id = table.table_id;
-      const path = `tables/join/${table_id}`;
-      this.$http
+      const path = `tables/${this.username}/join/${table_id}/`;
+      axios
         .get(path)
         .then(res => {
           if (res.data.status == "error") {

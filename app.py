@@ -1,12 +1,13 @@
-from flask_cors import CORS, cross_origin
-import simplejson as json
+import logging
+
 import mongoengine as me
-from mongoengine import connect
-import simplejson
+import simplejson as json
 
 # import socketio
-from flask import Flask, escape, current_app, request, session, url_for, jsonify
+from flask import Flask, current_app, escape, jsonify, request, session, url_for
+from flask_cors import CORS, cross_origin
 from flask_mongoengine import MongoEngine
+from mongoengine import connect
 
 app = Flask(__name__)
 app.secret_key = "123"
@@ -41,6 +42,9 @@ def init():
     player2 = Player(username="Will", chip_count=2000).save()
     player3 = Player(username="Robert", chip_count=3500).save()
     Table(name="default", players=[player1, player2, player3]).save()
+
+
+# init()
 
 
 @app.route("/tables/")
@@ -87,12 +91,12 @@ def logout():
     return {"status": "logged out"}
 
 
-@app.route("/tables/join/<string:table_id>/", methods=["GET"])
-def join_table(table_id):
-    if "username" not in session:
-        return {"status": "error", "error": "login first", "session": str(session)}
+@app.route("/tables/<string:username>/join/<string:table_id>/", methods=["GET"])
+def join_table(username, table_id):
+    # if "username" not in session:
+    #     return {"status": "error", "error": "login first", "session": str(session)}
     table = Table.objects(id=table_id).first()
-    username = session.get("username")
+    # username = session.get("username")
     player = Player.objects(username=username).first()
     if player is None:
         player = Player(username=username, chip_count=STARTING_CHIP_COUNT).save()
@@ -112,7 +116,7 @@ def leave_table():
     return {"status": "left table"}
 
 
-@app.route("/table/<string:table_id>/")
+@app.route("/tables/<string:table_id>/")
 def table(table_id):
     table = Table.objects.get(id=table_id)
     pot = 0
