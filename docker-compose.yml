@@ -3,31 +3,50 @@ version: '3'
 services:
   api:
     build: 
-      context: .
-      dockerfile: ./api.Dockerfile
+      context: ./backend
+      dockerfile: ../api.Dockerfile
     volumes:
-      - .:/code
+      - ./backend/:/backend
     environment:
       FLASK_ENV: development
     ports:
       - "5000:5000"
     depends_on:
-      - mongodb
+    - mongodb
+    - rabbitmq
 
   ui:
     build:
       context: ./frontend
       dockerfile: ../ui.Dockerfile
     volumes:
-      - './frontend:/app'
+      - ./frontend:/frontend
       - '/app/node_modules'
     ports:
       - "8080:8080"
     depends_on:
       - api
 
+  gameplay:
+    build:
+      context: ./gameplay
+      dockerfile: ../gameplay.Dockerfile
+    volumes:
+      - ./gameplay:/gameplay
+    depends_on:
+      - rabbitmq
+
   mongodb:
-        image: mongo:latest
-        ports:
-            - 27017:27017
+    image: mongo:latest
+    ports:
+      - 27017:27017
         
+  rabbitmq:
+    image: bitnami/rabbitmq:latest
+    ports:
+      - '4369:4369'
+      - '5672:5672'
+      - '25672:25672'
+      - '15672:15672'
+    environment:
+      - RABBITMQ_PASSWORD=password
