@@ -1,7 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import BootstrapVue from 'bootstrap-vue';
-import Vue from 'vue'
-import App from './App.vue'
+import Vue from 'vue';
+import VueSocketIO from 'vue-socket.io';
+import App from './App.vue';
 import router from './router';
 import axios from 'axios';
 
@@ -19,8 +20,17 @@ export default axios.create({
   }
 })
 
-
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: 'http://localhost:5000',
+  // vuex: {
+  //   store,
+  //   actionPrefix: 'SOCKET_',
+  //   mutationPrefix: 'SOCKET_'
+  // },
+  options: { path: "/socket.io" } //Optional options
+}))
 
 new Vue({
-  router, render: h => h(App), axios
+  router, render: h => h(App)
 }).$mount('#app')

@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div class="hello">
+      <h1>{{ msg }}</h1>
+      <button @click="clickButton()">click button</button>
+    </div>
+
     <p>{{error}}</p>
     <router-link v-if="joinedTable" to="/game">game</router-link>
 
@@ -47,10 +52,29 @@ export default {
       username: "",
       table_id: "",
       loggedIn: false,
-      joinedTable: false
+      joinedTable: false,
+      msg: "hello bro!"
     };
   },
+  sockets: {
+    connect: function() {
+      // eslint-disable-next-line
+      console.log("socket connected");
+    },
+    customEmit: function(data) {
+      data;
+      alert("received");
+      // eslint-disable-next-line
+      console.log(
+        'this method was fired by the socket server. eg: io.emit("customEmit", data)'
+      );
+    }
+  },
   methods: {
+    clickButton: function() {
+      // $socket is socket.io-client instance
+      this.$socket.emit("emit_method", this.msg);
+    },
     getTables() {
       const path = "tables/";
       axios
