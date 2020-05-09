@@ -28,12 +28,13 @@
             class="card-title bg-warning"
           >{{ player.username }}</div>
           <div v-else class="card-title">{{ player.username }}</div>
-          <div class="card-subtitle">{{ player.chip_count }}</div>
+          <div class="card-subtitle">{{ player.stack_size }}</div>
           <div class="mx-auto" style="display:inline-flex">
             <img :src="faceDownCardUrl" width="60" />
             <img :src="faceDownCardUrl" width="60" />
           </div>
           <div>AhAd</div>
+          <div>{{ player.position }}</div>
         </div>
       </div>
     </div>

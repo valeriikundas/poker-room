@@ -73,6 +73,7 @@ export default {
   methods: {
     clickButton: function() {
       // $socket is socket.io-client instance
+      alert("send");
       this.$socket.emit("emit_method", this.msg);
     },
     getTables() {
