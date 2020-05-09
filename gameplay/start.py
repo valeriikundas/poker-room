@@ -1,8 +1,3 @@
-"""[summary]
-
-start listens for start hand requests and starts them
-"""
-
 import json
 import logging
 import os
@@ -23,10 +18,23 @@ def callback(ch, method, properties, body):
     logging.info(f" [x] Start hand: {body}")
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
+    print(body)
     data = json.loads(body)
     Hand(data).run()
 
     logging.info(" [x] Hand finished")
+
+
+def connect(rabbitmq_url):
+    while True:
+        try:
+            connection = pika.BlockingConnection(pika.URLParameters(rabbitmq_url))
+            channel = connection.channel()
+            logging.info("rabbitmq connected")
+            return connection, channel
+        except AMQPConnectionError:
+            logging.error("waiting for RabbitMQ to become available...")
+            time.sleep(3)
 
 
 def main():
@@ -34,28 +42,17 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     RABBITMQ_URL = os.environ.get(
-        "RABBITMQ_URL", "amqp://user:password@rabbitmq:5672/%2F"
+        "RABBITMQ_URL", "amqp://user:password@localhost:5672/%2F"
     )
 
-    connection = None
-    channel = None
+    connection, channel = connect(RABBITMQ_URL)
 
-    while True:
-        try:
-            connection = pika.BlockingConnection(pika.URLParameters(RABBITMQ_URL))
-            channel = connection.channel()
-            logging.info("rabbitmq connected")
-            break
-        except AMQPConnectionError:
-            logging.error("waiting for RabbitMQ to become available...")
-            time.sleep(3)
-
-    channel.exchange_declare(exchange="start_hand", exchange_type="fanout")
+    channel.exchange_declare(exchange="start_hand_queue", exchange_type="fanout")
 
     result = channel.queue_declare(queue="start_hand_queue", durable=True)
     queue_name = result.method.queue
 
-    channel.queue_bind(queue=queue_name, exchange="start_hand")
+    channel.queue_bind(queue=queue_name, exchange="start_hand_queue")
 
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=queue_name, on_message_callback=callback)

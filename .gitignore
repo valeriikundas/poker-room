@@ -3,3 +3,4 @@ __pycache__
 node_modules
 npm-debug.log
 .vscode
+.mypy_cache

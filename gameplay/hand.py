@@ -18,8 +18,14 @@ class Hand:
         super().__init__()
 
         required_fields = ["id", "button_position", "blinds", "players"]
-        if not all(key in table_info for key in required_fields):
-            raise KeyError
+        for key in required_fields:
+            if key not in table_info:
+                raise KeyError(f"no {key} in table info {table_info}")
+        required_player_fields = ["username", "position", "stack_size"]
+        for player in table_info["players"]:
+            for key in required_player_fields:
+                if key not in player:
+                    raise KeyError(f"no {key} in player {player}")
 
         self.table_id = table_info["id"]
         self.hand_id = f"hand_{uuid.uuid4().hex}"

@@ -12,18 +12,17 @@ channel.queue_declare(queue="start_hand_queue", durable=True)
 
 message = json.dumps(
     {
-        "status": "ok",
         "event": "new_hand",
         "table_info": {
             "id": "table_test_id",
             "button_position": 1,  # in the last hand. gameplay will update it accordingly
             "blinds": {"small": 10, "big": 20, "ante": 2},
             "players": {
-                0: {"username": "ChloëGraceMoretz", "stack_size": 730},
-                1: {"username": "WillSmith", "stack_size": 1435, "sitout": True},
-                3: {"username": "RobertDowneyJr", "stack_size": 955},
-                5: {"username": "MargotRobbie", "stack_size": 2530},
-                7: {"username": "MattDajer", "stack_size": 440},
+                "0": {"username": "ChloëGraceMoretz", "stack_size": 730},
+                "1": {"username": "WillSmith", "stack_size": 1435, "sitout": True},
+                "3": {"username": "RobertDowneyJr", "stack_size": 955},
+                "5": {"username": "MargotRobbie", "stack_size": 2530},
+                "7": {"username": "MattDajer", "stack_size": 440},
             },
         },
     },
